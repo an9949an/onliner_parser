@@ -1,104 +1,85 @@
 /**
  * Created by qwer on 25.01.17.
  */
-var stopParsing = false;
+let stopParsing = false;
+
+/**
+ * parseGenerator
+ * @returns {boolean}
+ */
+function* parseGenerator() {
+    if(!preStartParsing()){
+        return false;
+    }
+
+    let catalogPage;
+    do {
+        catalogPage = yield getCatalogPage(catalogPage ? ++catalogPage.page.current : 1);
+        yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
+        yield new Promise(resolve => execute(parseProductsGenerator(catalogPage), null, resolve));
+    } while (catalogPage.page.current != catalogPage.page.last && !stopParsing);
+
+    finishParsing();
+
+    return true;
+}
+
+/**
+ * parseProductsGenerator
+ * @param catalogPage
+ * @returns {boolean}
+ */
+function* parseProductsGenerator(catalogPage) {
+    for (let productFormCatalog of catalogPage.products) {
+        processProduct(yield getProductPage(productFormCatalog));
+
+        let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1 + (catalogPage.page.current - 1) * catalogPage.page.limit;
+        setProgressBarPosition(productIndex, catalogPage.total);
+
+        if (stopParsing) break;
+        yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
+    }
+
+    return true;
+}
+
 
 /**
  * startParsing
  */
-function startParsing(page) {
-    stopParsing = false;
+function getCatalogPage(page) {
+    let siteCatalogLink = $('#onlinerLink').val();
 
-    var onlinerLinkInput = $('#onlinerLink');
-    var siteCatalogLink = onlinerLinkInput.val();
-
-    if (siteCatalogLink == '') {
-        alert('Введите ссылку с Онлайнера')
-        return;
-    }
-
-    onlinerLinkInput.prop('disabled', true);
-    $('#parseButton').prop('disabled', true);
-
-    var apiCatalogLink = (siteCatalogLink + '&page=' + page + '&group=1')
+    let apiCatalogLink = (siteCatalogLink + '&page=' + page + '&group=1')
         .replace('https://catalog.onliner.by', 'https://catalog.api.onliner.by:443/search');
-    sendRequest(apiCatalogLink, function process(data) {
-        processCatalogPage(data);
-    });
-}
 
-/**
- * processCatalogPage
- * @param data
- */
-function processCatalogPage(data) {
-    setTimeout(function () {
-
-        getProductPage(data, function () {
-            if (data.page.current < data.page.last && !stopParsing) {
-
-                setTimeout(function () {
-                    startParsing(++data.page.current);
-                }, _.random(1500, 2000))
-
-            } else {
-                $('#onlinerLink').prop('disabled', false);
-                $('#parseButton').prop('disabled', false);
-                setProgressBarPosition(0, 0);
-            }
-        });
-
-    }, _.random(1500, 2000));
+    return sendRequest(apiCatalogLink);
 }
 
 
 /**
  * getProductPage
- * @param data
- * @param endCallback
- * @param startPosition
+ * @param productFromCatalog
  */
-function getProductPage(data, endCallback, startPosition) {
-    startPosition = startPosition || 0;
-
-    setProgressBarPosition(startPosition + (data.page.current - 1) * data.page.items, data.total);
-
-    if (startPosition < data.page.items && !stopParsing) {
-        sendRequest('https://catalog.api.onliner.by:443/products/' + data.products[startPosition].key
-            + '?include=schema,configurations,gallery,parameters', function (product) {
-            processProduct(product);
-
-            setTimeout(function () {
-                getProductPage(data, endCallback, ++startPosition)
-            }, _.random(1500, 2000))
-        })
-    } else {
-        endCallback();
-    }
+function getProductPage(productFromCatalog) {
+    return sendRequest('https://catalog.api.onliner.by:443/products/' + productFromCatalog.key
+        + '?include=schema,configurations,gallery,parameters')
 }
 
 /**
  * sendRequest
  * @param url
- * @param callback
  */
-function sendRequest(url, callback) {
-    var xhr = new XMLHttpRequest();
-
-    xhr.open('GET', url, true);
-
-    xhr.send();
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState != 4) return;
-
-
-        if (xhr.status != 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            callback(JSON.parse(xhr.response));
+function sendRequest(url) {
+    return fetch(url, {
+        method: 'GET'
+    }).then(function (response) {
+        if (response.status !== 200) {
+            return;
         }
-    }
+
+        return response.json();
+    })
 }
 
 /**
@@ -107,7 +88,7 @@ function sendRequest(url, callback) {
  * @param total
  */
 function setProgressBarPosition(current, total) {
-    var progressBar = $("#parsingProgressBar");
+    let progressBar = $("#parsingProgressBar");
     if (!total) {
         progressBar.css("width", 0);
         return;
@@ -115,4 +96,51 @@ function setProgressBarPosition(current, total) {
     progressBar.css("width", function (index) {
         return 100 * current / total + '%';
     });
+}
+
+/**
+ * execute
+ * @param generator
+ * @param yieldValue
+ * @param resolveFn
+ */
+function execute(generator, yieldValue, resolveFn) {
+    let next = generator.next(yieldValue);
+
+    if (!next.done) {
+        next.value.then(
+            result => execute(generator, result, resolveFn),
+            err => generator.throw(err)
+        );
+    } else {
+        if (resolveFn) resolveFn(yieldValue);
+    }
+}
+
+/**
+ * finishParsing
+ */
+function finishParsing() {
+    $('#onlinerLink').prop('disabled', false);
+    $('#parseButton').prop('disabled', false);
+    stopParsing = false;
+    setProgressBarPosition(0, 0);
+}
+
+/**
+ * preStartParsing
+ * @returns {boolean}
+ */
+function preStartParsing() {
+    let onlinerLinkInput = $('#onlinerLink');
+
+    if (onlinerLinkInput.val() == '') {
+        alert('Введите ссылку с Онлайнера');
+        return false;
+    }
+
+    onlinerLinkInput.prop('disabled', true);
+    $('#parseButton').prop('disabled', true);
+
+    return true;
 }
