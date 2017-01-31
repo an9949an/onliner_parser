@@ -123,7 +123,6 @@ function execute(generator, yieldValue, resolveFn) {
 function finishParsing() {
     $('#onlinerLink').prop('disabled', false);
     $('#parseButton').prop('disabled', false);
-    stopParsing = false;
     setProgressBarPosition(0, 0);
 }
 
@@ -132,6 +131,7 @@ function finishParsing() {
  * @returns {boolean}
  */
 function preStartParsing() {
+    stopParsing = false;
     let onlinerLinkInput = $('#onlinerLink');
 
     if (onlinerLinkInput.val() == '') {
