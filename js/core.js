@@ -12,14 +12,14 @@ function* parseGenerator() {
         return false;
     }
 
-    let catalogPage;
+    let csv = createCsvArrayWithHeaders(), catalogPage;
     do {
         catalogPage = yield getCatalogPage(catalogPage ? ++catalogPage.page.current : 1);
         yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
-        yield new Promise(resolve => execute(parseProductsGenerator(catalogPage), null, resolve));
+        yield new Promise(resolve => execute(parseProductsGenerator(catalogPage, csv), null, resolve));
     } while (catalogPage.page.current != catalogPage.page.last && !stopParsing);
 
-    finishParsing();
+    finishParsing(csv);
 
     return true;
 }
@@ -27,11 +27,12 @@ function* parseGenerator() {
 /**
  * parseProductsGenerator
  * @param catalogPage
+ * @param csv
  * @returns {boolean}
  */
-function* parseProductsGenerator(catalogPage) {
+function* parseProductsGenerator(catalogPage, csv) {
     for (let productFormCatalog of catalogPage.products) {
-        processProduct(yield getProductPage(productFormCatalog));
+        processProduct(yield getProductPage(productFormCatalog), csv);
 
         let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1 + (catalogPage.page.current - 1) * catalogPage.page.limit;
         setProgressBarPosition(productIndex, catalogPage.total);
@@ -93,7 +94,7 @@ function setProgressBarPosition(current, total) {
         progressBar.css("width", 0);
         return;
     }
-    progressBar.css("width", function (index) {
+    progressBar.css("width", function () {
         return 100 * current / total + '%';
     });
 }
@@ -120,10 +121,20 @@ function execute(generator, yieldValue, resolveFn) {
 /**
  * finishParsing
  */
-function finishParsing() {
+function finishParsing(csv) {
     $('#onlinerLink').prop('disabled', false);
     $('#parseButton').prop('disabled', false);
     setProgressBarPosition(0, 0);
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csv.forEach(function(infoArray, index){
+
+        let dataString = infoArray.join(";");
+        csvContent += index < csv.length ? dataString+ "\n" : dataString;
+
+    });
+    let encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
 }
 
 /**
