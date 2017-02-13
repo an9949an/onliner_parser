@@ -59,7 +59,7 @@ function processProduct(product, csv) {
     addToCsv(getProductAttrValue('fork_type', product), 'attribute:pa_tip-vilki', csv);
     addToCsv(getProductAttrValue('back_brake', product), 'attribute:pa_tip-zadnego-tormoza', csv);
     addToCsv(getProductAttrValue('bike_weight', product), 'attribute:pa_ves', csv);
-    // addToCsv(getProductAttrValue('разобраться', product), 'attribute:pa_vozrast-rebenka', csv);
+    addToCsv(getProductAttrValue('bike_age', product), 'attribute:pa_vozrast-rebenka', csv);
     addToCsv(getProductAttrValue('bike_hubs', product), 'attribute:pa_vtulka-perednyaya', csv);
     addToCsv(getProductAttrValue('bike_rearhub', product), 'attribute:pa_vtulka-zadnyaya', csv);
     addToCsv(getProductAttrValue('hardtail', product), 'attribute:pa_zadnijj-amortizator', csv);
