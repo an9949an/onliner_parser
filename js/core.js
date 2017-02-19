@@ -129,7 +129,7 @@ function finishParsing(csv) {
     let csvContent = "data:text/csv;charset=utf-8,";
     csv.forEach(function(infoArray, index){
 
-        let dataString = infoArray.join(";");
+        let dataString = infoArray.join("~");
         csvContent += index < csv.length ? dataString+ "\n" : dataString;
 
     });

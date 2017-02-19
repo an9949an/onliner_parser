@@ -20,7 +20,16 @@ function processProduct(product, csv) {
         return image.large;
     }).join('|');
     addToCsv(images, 'images', csv);
-    addToCsv(getBikeCategories(product), 'tax:product_cat', csv);
+    addToCsv(getCategories(product), 'tax:product_cat', csv);
+    addToCsv('Купить ' + product.full_name + ' в Минске', 'meta:_aioseop_title', csv);
+
+    if (product.prices) {
+        addToCsv(product.prices.price_min.amount, 'regular_price', csv);
+        addToCsv(product.prices.price_max.amount, 'price_max', csv);
+    } else {
+        addToCsv('0', 'regular_price', csv);
+    }
+
     addAttributes(product, csv);
 
     let logInput = $('#log');
@@ -33,15 +42,19 @@ function processProduct(product, csv) {
  * @param csv
  */
 function addAttributes(product, csv) {
+    addToCsv(product.manufacturer.name, 'attribute:pa_brand', csv);
+
     product.parameters.forEach(function (parametersGroup) {
         parametersGroup.parameters.forEach(function (parameter) {
-            if(parameter.value[0].type == "bool"){
+            if (parameter.value[0].type == "bool") {
                 addToCsv(parameter.value[0].value ? 'Да' : 'Нет', 'attribute:pa_' + parameter.id, csv);
             } else {
                 addToCsv(parameter.value[0].value, 'attribute:pa_' + parameter.id, csv);
             }
         })
-    })
+    });
+
+    addToCsv(product.manufacturer.legal_name + '. ' + product.manufacturer.legal_address, 'attribute:pa_manufacturer', csv);
 }
 
 /**
@@ -53,6 +66,7 @@ function createCsvArrayWithHeaders() {
         'post_name',
         'ID',
         'regular_price',
+        'price_max',
         'images',
         'tax:product_cat'
     ]]
@@ -76,6 +90,32 @@ function addToCsv(value, attrName, csv) {
 }
 
 /**
+ * getCategories
+ * @param product
+ * @returns {string}
+ */
+function getCategories(product) {
+    switch (product.name_prefix) {
+        case 'Велосипед':
+            return getBikeCategories(product);
+            break;
+        case 'Детский велосипед':
+            return getKidBikeCategories(product);
+            break;
+    }
+}
+
+/**
+ * getKidBikeCategories
+ * @param product
+ */
+function getKidBikeCategories(product) {
+    let categories = 'Детские велосипеды';
+    categories += '|Детские велосипеды > Детские велосипеды ' + product.manufacturer.name;
+    return categories;
+}
+
+/**
  * getBikeCategories
  * @param product
  * @returns {string}
@@ -88,13 +128,16 @@ function getBikeCategories(product) {
         categories += '|Велосипеды > ' + category + ' ' + product.manufacturer.name;
     });
 
-    let brandYearCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name
-        + ' ' + getProductAttrValue('common_date', product);
-    categories += '|' + brandYearCategory;
+    let commonDate = getProductAttrValue('common_date', product);
+    if (commonDate) {
+        let brandYearCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name
+            + ' ' + commonDate;
+        categories += '|' + brandYearCategory;
 
-    bikeClassCategories.forEach(function (category) {
-        categories += '|' + brandYearCategory + ' > ' + category + ' ' + product.manufacturer.name;
-    });
+        bikeClassCategories.forEach(function (category) {
+            categories += '|' + brandYearCategory + ' > ' + category + ' ' + product.manufacturer.name;
+        });
+    }
 
     return categories;
 }
@@ -147,7 +190,6 @@ function getBikeClassCategories(product) {
             bikeClassCategories.push('Фэт-байк велосипеды');
             break;
     }
-
     if (getProductAttrValue('female', product)) {
         bikeClassCategories.push('Женские велосипеды');
     }
@@ -156,6 +198,9 @@ function getBikeClassCategories(product) {
     }
     if (getProductAttrValue('hardtail', product)) {
         bikeClassCategories.push('Двухподвесные велосипеды');
+    }
+    if (getProductAttrValue('folding_frame', product)) {
+        bikeClassCategories.push('Складные велосипеды');
     }
 
     return bikeClassCategories;
