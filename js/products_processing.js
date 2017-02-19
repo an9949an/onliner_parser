@@ -122,22 +122,25 @@ function getKidBikeCategories(product) {
  */
 function getBikeCategories(product) {
     let categories = 'Велосипеды';
+    let brandCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name;
+    categories += '|' + brandCategory;
+
     let bikeClassCategories = getBikeClassCategories(product);
     bikeClassCategories.forEach(function (category) {
         categories += '|Велосипеды > ' + category;
-        categories += '|Велосипеды > ' + category + ' ' + product.manufacturer.name;
+        categories += '|' + brandCategory + ' > ' + category + ' ' + product.manufacturer.name;
     });
 
-    let commonDate = getProductAttrValue('common_date', product);
-    if (commonDate) {
-        let brandYearCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name
-            + ' ' + commonDate;
-        categories += '|' + brandYearCategory;
-
-        bikeClassCategories.forEach(function (category) {
-            categories += '|' + brandYearCategory + ' > ' + category + ' ' + product.manufacturer.name;
-        });
-    }
+    // let commonDate = getProductAttrValue('common_date', product);
+    // if (commonDate) {
+    //     let brandYearCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name
+    //         + ' ' + commonDate;
+    //     categories += '|' + brandYearCategory;
+    //
+    //     bikeClassCategories.forEach(function (category) {
+    //         categories += '|' + brandYearCategory + ' > ' + category + ' ' + product.manufacturer.name;
+    //     });
+    // }
 
     return categories;
 }
