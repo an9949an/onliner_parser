@@ -8,7 +8,7 @@ let stopParsing = false;
  * @returns {boolean}
  */
 function* parseGenerator() {
-    if(!preStartParsing()){
+    if (!preStartParsing()) {
         return false;
     }
 
@@ -32,7 +32,12 @@ function* parseGenerator() {
  */
 function* parseProductsGenerator(catalogPage, csv) {
     for (let productFormCatalog of catalogPage.products) {
-        processProduct(yield getProductPage(productFormCatalog), csv);
+        try {
+            processProduct(yield getProductPage(productFormCatalog), csv);
+        } catch (err) {
+            console.log('Ошибка при обработке товара:');
+            console.log(productFormCatalog);
+        }
 
         let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1 + (catalogPage.page.current - 1) * catalogPage.page.limit;
         setProgressBarPosition(productIndex, catalogPage.total);
@@ -127,14 +132,18 @@ function finishParsing(csv) {
     setProgressBarPosition(0, 0);
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csv.forEach(function(infoArray, index){
+    csv.forEach(function (infoArray, index) {
 
         let dataString = infoArray.join("~");
-        csvContent += index < csv.length ? dataString+ "\n" : dataString;
+        csvContent += index < csv.length ? dataString + "\n" : dataString;
 
     });
     let encodedUri = encodeURI(csvContent);
     window.open(encodedUri);
+    console.log('File downloaded');
+    window.lastEncodedCsv = encodedUri;
+    window.lastCsvContent = csvContent;
+    window.lastCsv = csv;
 }
 
 /**
