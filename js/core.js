@@ -2,6 +2,7 @@
  * Created by qwer on 25.01.17.
  */
 let stopParsing = false;
+let notLoadNames = [];
 
 /**
  * parseGenerator
@@ -32,18 +33,20 @@ function* parseGenerator() {
  */
 function* parseProductsGenerator(catalogPage, csv) {
     for (let productFormCatalog of catalogPage.products) {
-        try {
-            processProduct(yield getProductPage(productFormCatalog), csv);
-        } catch (err) {
-            console.log('Ошибка при обработке товара:');
-            console.log(productFormCatalog);
+        if (notLoadNames.length && notLoadNames.indexOf(productFormCatalog.name.replace('&quot;', '"')) < 0) {
+            try {
+                processProduct(yield getProductPage(productFormCatalog), csv);
+            } catch (err) {
+                console.log('Ошибка при обработке товара:');
+                console.log(productFormCatalog);
+            }
+
+            let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1 + (catalogPage.page.current - 1) * catalogPage.page.limit;
+            setProgressBarPosition(productIndex, catalogPage.total);
+
+            if (stopParsing) break;
+            yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
         }
-
-        let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1 + (catalogPage.page.current - 1) * catalogPage.page.limit;
-        setProgressBarPosition(productIndex, catalogPage.total);
-
-        if (stopParsing) break;
-        yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
     }
 
     return true;
@@ -163,4 +166,31 @@ function preStartParsing() {
     $('#parseButton').prop('disabled', true);
 
     return true;
+}
+
+function readAlreadyExistedCsv() {
+    $('.input-already-existed').parse({
+        config: {
+            delimiter: ",",
+            header: true,
+            newline: "\n",
+            quotes: true,
+            quoteChar: '"',
+            complete: function (e, fileData) {
+                try {
+                    notLoadNames = e.data.map((x) => x['meta:name_from_onliner']);
+                    $('.already-existed-csv-name').text('Файл ' + fileData.name + ' успешно обработан.')
+                        .removeClass('bg-danger').addClass('bg-success');
+                } catch (error) {
+                    notLoadNames = [];
+                    $('.already-existed-csv-name').text('Ошибка, что-то пошло не так.').addClass('bg-danger').removeClass('bg-success');
+                    alert('Ошибка. И один Господь Бог в курсе что за хрень там произошла, извините, ' +
+                        'но ничего поделать уже нельзя. Все кончено. Товары не запаросились, бизнес просран. ' +
+                        'Выход один: алкоголизм. Приносим еще раз свои искренние извинения за неудобства, ' +
+                        'обратитесь в ближайший виноводочный отдел, благодарим за понимание.')
+                }
+
+            }
+        }
+    });
 }

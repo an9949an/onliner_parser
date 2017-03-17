@@ -5,3 +5,7 @@
 #log{
     height: 500px;
 }
+
+.already-existed-csv-name{
+    padding: 8px;
+}

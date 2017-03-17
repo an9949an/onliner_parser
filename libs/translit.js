@@ -2,8 +2,8 @@
 var transliterate = (
     function() {
         var
-            rus = "Изи вибрэйк Диск диск Шульц Леди щ   ш  ч  ц  ю  я  ё  ж  ъ  ы  э  а б в г д е з и й к л м н о п р с т у ф кс ь".split(/ +/g),
-            eng = "Easy V-brake Disc disc Shulz Lady shh sh ch cz yu ya yo zh `` y' e` a b v g d e z i j k l m n o p r s t u f x `".split(/ +/g)
+            rus = "Спешелайзед Новатрэк Рэйсер Ламборджини Джаинт Гэлакси Электра Куб Центурион Кенондейл Тахое в Слик Чик Руки Юбили Калькоф Вояжер Хайбайк Эпик Фуджи к Бой Фокус Вистлер Инфинити леди Рози Джаз Роки Юниор Авеню Швин Квест Слайд Жиадао Гринвэй Изи вибрэйк Диск диск Шульц Леди щ   ш  ч  ц  ю  я  ё  ж  ъ  ы  э  а б в г д е з и й к л м н о п р с т у ф кс ь".split(/ +/g),
+            eng = "Specialized Novatrack Racer Lamborghini Giant Galaxy Electra Cube Centurion Cannondale Tahoe w Slik Chik Rookie Jubilee Kalkhoff Voyager Haibike Epic Fuji y c Boy Focus Whistler Infinity lady Rosy Jazz Rocky Junior Avenue Schwinn Quest Slide Jiadao Greenway Easy V-brake Disc disc Shulz Lady shh sh ch cz yu ya yo zh `` y' e` a b v g d e z i j k l m n o p r s t u f x `".split(/ +/g)
             ;
         return function(text, engToRus) {
             var x;

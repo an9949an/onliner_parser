@@ -14,7 +14,7 @@ function processProduct(product, csv) {
 
     let postTitle = product.name_prefix + ' ' + product.full_name + ' | ' + transliterate(product.full_name, true);
     addToCsv(postTitle, 'post_title', csv);
-    addToCsv(product.name, 'meta:name_from_onliner', csv);
+    addToCsv(product.name.replace('&quot;', '"'), 'meta:name_from_onliner', csv);
     addToCsv(product.key, 'post_name', csv);
     addToCsv(_.shuffle(product.description.split(', ')).join(', '), 'post_content', csv);
     let images = product.gallery.map(function (image) {

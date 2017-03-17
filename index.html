@@ -95,6 +95,19 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-lg-4">
+            <label class="btn btn-success btn-file">
+                Выбрать файл с уже загруженными
+                <input type="file" class="input-already-existed" style="display: none;"
+                       onchange="readAlreadyExistedCsv()">
+            </label>
+        </div>
+        <div class="col-lg-8">
+            <p class="bg-danger already-existed-csv-name">Файл не загружен</p>
+        </div>
+    </div>
+
 
     <!-- /.row -->
 
@@ -107,6 +120,7 @@
 <!-- Bootstrap Core JavaScript -->
 <script src="libs/bootstrap.min.js"></script>
 <script src="libs/translit.js"></script>
+<script src="libs/papaparse.min.js"></script>
 <script src="js/core.js"></script>
 <script src="js/products_processing.js"></script>
 </body>
