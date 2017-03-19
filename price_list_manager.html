@@ -62,10 +62,35 @@
 <div class="container">
 
     <div class="row">
+        <div class="col-lg-4">
+            <label class="btn btn-success btn-file">
+                Выбрать onliner csv
+                <input type="file" class="input-csv-from-onliner" style="display: none;"
+                       onchange="loadCsvFromOnliner()">
+            </label>
+        </div>
+        <div class="col-lg-8">
+            <p class="bg-danger csv-from-onliner-name">Файл не загружен</p>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-4">
+            <label class="btn btn-success btn-file">
+                Выбрать woocommerce csv
+                <input type="file" class="input-csv-from-site" style="display: none;"
+                       onchange="loadCsvFromSite()">
+            </label>
+        </div>
+        <div class="col-lg-8">
+            <p class="bg-danger csv-from-site-name">Файл не загружен</p>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-12">
-
-            <span>Price list manager not developed yet</span>
-
+            <button class="btn btn-danger" onclick="calculateFileWithPrices()">Рассчитать</button>
         </div>
     </div>
 
@@ -77,6 +102,9 @@
 <script src="libs/lodash.min.js"></script>
 <!-- Bootstrap Core JavaScript -->
 <script src="libs/bootstrap.min.js"></script>
+<script src="libs/papaparse.min.js"></script>
+
+<script src="js/price_list_manager.js"></script>
 
 </body>
 

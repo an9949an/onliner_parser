@@ -6,6 +6,6 @@
     height: 500px;
 }
 
-.already-existed-csv-name{
+.already-existed-csv-name, .csv-from-onliner-name, .csv-from-site-name{
     padding: 8px;
 }
