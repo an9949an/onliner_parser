@@ -33,7 +33,7 @@ function* parseGenerator() {
  */
 function* parseProductsGenerator(catalogPage, csv) {
     for (let productFormCatalog of catalogPage.products) {
-        if (notLoadNames.length && notLoadNames.indexOf(productFormCatalog.name) < 0) {
+        if (notLoadNames.indexOf(productFormCatalog.name) < 0) {
             try {
                 processProduct(yield getProductPage(productFormCatalog), csv);
             } catch (err) {

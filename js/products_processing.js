@@ -126,13 +126,31 @@ function getKidBikeCategories(product) {
  */
 function getBikeCategories(product) {
     let categories = 'Велосипеды';
+
+    let commonDate = getProductAttrValue('common_date', product);
+    if (commonDate) {
+        categories += '|Велосипеды > ' + commonDate;
+    }
+
     let brandCategory = 'Велосипеды > ' + product.manufacturer.name;
     categories += '|' + brandCategory;
+    categories += '|' + brandCategory + ' > ' + commonDate;
 
     let bikeClassCategories = getBikeClassCategories(product);
     bikeClassCategories.forEach(function (category) {
         categories += '|Велосипеды > ' + category;
-        categories += '|' + brandCategory + ' > ' + category + ' ' + product.manufacturer.name;
+        categories += '|Велосипеды > ' + category + ' > ' + commonDate;
+        categories += '|' + brandCategory + ' > ' + category;
+    });
+
+    let bikeSexCategory = getBikeSexCategories(product);
+    bikeSexCategory.forEach(function (sexCategory) {
+        categories += '|Велосипеды > ' + sexCategory;
+        categories += '|Велосипеды > ' + sexCategory + ' > ' + commonDate;
+        categories += '|' + brandCategory + ' > ' + sexCategory;
+        bikeClassCategories.forEach(function (bikeClassCategory) {
+            categories += '|Велосипеды > ' + sexCategory + ' > ' + bikeClassCategory;
+        });
     });
 
     let bwheelDiameter = getProductAttrValue('bwheel_diameter', product);
@@ -140,11 +158,6 @@ function getBikeCategories(product) {
         let intDiameter = parseFloat(bwheelDiameter);
         let measurementUnit = intDiameter == 24 ? 'дюйма' : 'дюймов';
         categories += '|Велосипеды > ' + intDiameter + ' ' + measurementUnit;
-    }
-
-    let commonDate = getProductAttrValue('common_date', product);
-    if (commonDate) {
-        categories += '|Велосипеды > ' + commonDate;
     }
 
     if (product.prices) {
@@ -264,12 +277,6 @@ function getBikeClassCategories(product) {
             bikeClassCategories.push('Фэт-байк');
             break;
     }
-    if (getProductAttrValue('female', product)) {
-        bikeClassCategories.push('Женские');
-    }
-    if (getProductAttrValue('bike_kid_teen', product)) {
-        bikeClassCategories.push('Подростковые');
-    }
     if (getProductAttrValue('hardtail', product)) {
         bikeClassCategories.push('Двухподвесные');
     }
@@ -278,6 +285,25 @@ function getBikeClassCategories(product) {
     }
 
     return bikeClassCategories;
+}
+
+/**
+ * getBikeSexCategories
+ * @param product
+ */
+function getBikeSexCategories(product) {
+    let bikeSexCategories = [];
+
+    if (getProductAttrValue('female', product)) {
+        bikeSexCategories.push('Женские');
+    } else {
+        bikeSexCategories.push('Мужские');
+    }
+    if (getProductAttrValue('bike_kid_teen', product)) {
+        bikeSexCategories.push('Подростковые');
+    }
+
+    return bikeSexCategories;
 }
 
 /**
