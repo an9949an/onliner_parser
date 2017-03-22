@@ -126,7 +126,7 @@ function getKidBikeCategories(product) {
  */
 function getBikeCategories(product) {
     let categories = 'Велосипеды';
-    let brandCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name;
+    let brandCategory = 'Велосипеды > ' + product.manufacturer.name;
     categories += '|' + brandCategory;
 
     let bikeClassCategories = getBikeClassCategories(product);
@@ -139,19 +139,19 @@ function getBikeCategories(product) {
     if (bwheelDiameter) {
         let intDiameter = parseFloat(bwheelDiameter);
         let measurementUnit = intDiameter == 24 ? 'дюйма' : 'дюймов';
-        categories += '|Велосипеды > Велосипеды ' + intDiameter + ' ' + measurementUnit;
+        categories += '|Велосипеды > ' + intDiameter + ' ' + measurementUnit;
     }
 
     let commonDate = getProductAttrValue('common_date', product);
     if (commonDate) {
-        categories += '|Велосипеды > Велосипеды ' + commonDate;
+        categories += '|Велосипеды > ' + commonDate;
     }
 
     if (product.prices) {
         if (product.prices.max > 10000000) {
-            categories += '|Велосипеды > Дорогие велосипеды';
+            categories += '|Велосипеды > Дорогие';
         } else if (product.prices.max < 4000000) {
-            categories += '|Велосипеды > Дешевые велосипеды';
+            categories += '|Велосипеды > Дешевые';
         }
     }
 
@@ -163,7 +163,7 @@ function getBikeCategories(product) {
     let bikeColors = getProductAttrValue('bike_color', product);
     if (bikeColors) {
         bikeColors.split(', ').forEach(function (color) {
-            categories += '|Велосипеды > ' + _.capitalize(color) + ' велосипед';
+            categories += '|Велосипеды > ' + _.capitalize(color);
         });
     }
 
@@ -192,26 +192,26 @@ function getCountryCategory(product) {
         case 'shulz':
         case 'novatrack':
         case 'stark':
-            return 'Российские велосипеды';
+            return 'Российские';
             break;
 
         case 'fuji':
-            return 'Японские велосипеды';
+            return 'Японские';
             break;
 
         case 'aist':
-            return 'Белорусские велосипеды';
+            return 'Белорусские';
             break;
 
         case 'trek':
         case 'schwinn':
         case 'specialized':
-            return 'Американские велосипеды';
+            return 'Американские';
             break;
 
         case 'greenway':
         case 'nakxus':
-            return 'Китайские велосипеды';
+            return 'Китайские';
             break;
     }
 }
@@ -225,56 +225,56 @@ function getBikeClassCategories(product) {
     let bikeClassCategories = [];
     switch (bikeClass) {
         case 'горный':
-            bikeClassCategories.push('Горные велосипеды');
+            bikeClassCategories.push('Горные');
             break;
         case 'городской':
-            bikeClassCategories.push('Городские велосипеды');
+            bikeClassCategories.push('Городские');
             break;
         case 'гибридный':
-            bikeClassCategories.push('Гибридные велосипеды');
+            bikeClassCategories.push('Гибридные');
             break;
         case 'шоссейный':
-            bikeClassCategories.push('Шоссейные велосипеды');
+            bikeClassCategories.push('Шоссейные');
             break;
         case 'комфортный':
-            bikeClassCategories.push('Комфортные велосипеды');
+            bikeClassCategories.push('Комфортные');
             break;
         case 'круизер':
-            bikeClassCategories.push('Велосипеды круизеры');
+            bikeClassCategories.push('Круизеры');
             break;
         case 'BMX':
-            bikeClassCategories.push('Велосипеды BMX');
+            bikeClassCategories.push('BMX');
             break;
         case 'туристический':
-            bikeClassCategories.push('Туристические велосипеды');
+            bikeClassCategories.push('Туристические');
             break;
         case 'циклокроссовый':
-            bikeClassCategories.push('Циклокроссовые велосипеды');
+            bikeClassCategories.push('Циклокроссовые');
             break;
         case 'трековый':
-            bikeClassCategories.push('Трековые велосипеды');
+            bikeClassCategories.push('Трековые');
             break;
         case 'тандем':
-            bikeClassCategories.push('Тандем велосипеды');
+            bikeClassCategories.push('Тандем');
             break;
         case 'электровелосипед':
             bikeClassCategories.push('Электровелосипеды');
             break;
         case 'фэт-байк':
-            bikeClassCategories.push('Фэт-байк велосипеды');
+            bikeClassCategories.push('Фэт-байк');
             break;
     }
     if (getProductAttrValue('female', product)) {
-        bikeClassCategories.push('Женские велосипеды');
+        bikeClassCategories.push('Женские');
     }
     if (getProductAttrValue('bike_kid_teen', product)) {
-        bikeClassCategories.push('Подростковые велосипеды');
+        bikeClassCategories.push('Подростковые');
     }
     if (getProductAttrValue('hardtail', product)) {
-        bikeClassCategories.push('Двухподвесные велосипеды');
+        bikeClassCategories.push('Двухподвесные');
     }
     if (getProductAttrValue('folding_frame', product)) {
-        bikeClassCategories.push('Складные велосипеды');
+        bikeClassCategories.push('Складные');
     }
 
     return bikeClassCategories;
