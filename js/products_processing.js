@@ -12,7 +12,7 @@ function processProduct(product, csv) {
 
     addToCsv(product.id, 'ID', csv);
 
-    let postTitle = product.name_prefix + ' ' + product.full_name + ' | ' + transliterate(product.full_name, true);
+    let postTitle = product.name_prefix + ' ' + product.full_name;
     addToCsv(postTitle, 'post_title', csv);
     addToCsv(product.name, 'meta:name_from_onliner', csv);
     addToCsv(product.key, 'meta:key_from_onliner', csv);
@@ -23,10 +23,10 @@ function processProduct(product, csv) {
     }).join('|');
     addToCsv(images, 'images', csv);
     addToCsv(getCategories(product), 'tax:product_cat', csv);
-    addToCsv('Купить ' + product.full_name + ' в Минске', 'meta:_aioseop_title', csv);
-    addToCsv('Купить ' + getProductAttrValue('bike_class', product) + ' велосипед ' + product.full_name + '. '
-        + _.capitalize(_.shuffle(product.description.split(', ')).join(', ')) + '.',
-        'meta:_aioseop_description', csv);
+    addToCsv('Купить ' + product.full_name + ' в Минске', 'meta:_yoast_wpseo_title', csv);
+    addToCsv('Купить ' + getProductAttrValue('bike_class', product) + ' велосипед ' + product.full_name + ' в Минске. '
+        + 'Бесплатная доставка, гарантия. Акции и подарки.',
+        'meta:_yoast_wpseo_metadesc', csv);
 
     if (product.prices) {
         addToCsv(product.prices.price_min.amount, 'regular_price', csv);
