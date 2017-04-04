@@ -16,14 +16,20 @@ function processProduct(product, csv) {
     addToCsv(postTitle, 'post_title', csv);
     addToCsv(product.name, 'meta:name_from_onliner', csv);
     addToCsv(product.key, 'meta:key_from_onliner', csv);
-    addToCsv(product.full_name.replace(/[\(\)"',\.]/g, '').split(' ').join('-').toLowerCase(), 'post_name', csv);
-    addToCsv(_.shuffle(product.description.split(', ')).join(', '), 'post_content', csv);
+    addToCsv(product.id, 'meta:id_from_onliner', csv);
+    addToCsv(product.key, 'post_name', csv);
+
+    let description = '<strong>Велосипед ' + product.full_name + '</strong> имеет характеристики: ' +
+        _.shuffle(product.description.split(', ')).join(', ') + '.';
+
+    addToCsv(description, 'post_content', csv);
     let images = product.gallery.map(function (image) {
         return image.large.replace('large', 'main');
     }).join('|');
     addToCsv(images, 'images', csv);
     addToCsv(getCategories(product), 'tax:product_cat', csv);
-    addToCsv('Купить ' + product.full_name + ' в Минске', 'meta:_yoast_wpseo_title', csv);
+    addToCsv(product.full_name, 'meta:_yoast_wpseo_focuskw', csv);
+    addToCsv('Купить велосипед ' + product.full_name + ' в Минске', 'meta:_yoast_wpseo_title', csv);
     addToCsv('Купить ' + getProductAttrValue('bike_class', product) + ' велосипед ' + product.full_name + ' в Минске. '
         + 'Бесплатная доставка, гарантия. Акции и подарки.',
         'meta:_yoast_wpseo_metadesc', csv);
@@ -34,6 +40,7 @@ function processProduct(product, csv) {
     } else {
         addToCsv('0', 'regular_price', csv);
     }
+    addToCsv(getPrimaryCategory(product), 'meta:custom_primary_category', csv);
 
     addAttributes(product, csv);
 
@@ -95,6 +102,24 @@ function addToCsv(value, attrName, csv) {
 }
 
 /**
+ * getBikeBrandCategory
+ * @param product
+ */
+let getBikeBrandCategory = (product) => 'Велосипеды > Велосипеды ' + product.manufacturer.name;
+
+/**
+ * getPrimaryCategory
+ * @param product
+ */
+function getPrimaryCategory(product) {
+    switch (product.name_prefix) {
+        case 'Велосипед':
+            return getBikeBrandCategory(product);
+            break;
+    }
+}
+
+/**
  * getCategories
  * @param product
  * @returns {string}
@@ -133,7 +158,7 @@ function getBikeCategories(product) {
         categories += '|Велосипеды > Велосипеды ' + commonDate;
     }
 
-    let brandCategory = 'Велосипеды > Велосипеды ' + product.manufacturer.name;
+    let brandCategory = getBikeBrandCategory(product);
     categories += '|' + brandCategory;
     categories += '|' + brandCategory + ' > Велосипеды ' + product.manufacturer.name + ' ' + commonDate;
 
