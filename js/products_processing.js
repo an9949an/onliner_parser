@@ -17,7 +17,7 @@ function processProduct(product, csv) {
     addToCsv(product.name, 'meta:name_from_onliner', csv);
     addToCsv(product.key, 'meta:key_from_onliner', csv);
     addToCsv(product.id, 'meta:id_from_onliner', csv);
-    addToCsv(product.key, 'post_name', csv);
+    addToCsv(product.full_name.replace(/[\(\)"',\.]/g, '').replace(/&quot;/g, '').split(' ').join('-').toLowerCase(), 'post_name', csv);
 
     let description = '<strong>Велосипед ' + product.full_name + '</strong> имеет характеристики: ' +
         _.shuffle(product.description.split(', ')).join(', ') + '.';
