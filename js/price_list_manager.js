@@ -66,10 +66,18 @@ function loadCsvFromSite() {
  */
 function calculateFileWithPrices() {
     let pricesForMerging = pricesFromSite.map(function (siteItem) {
-        siteItem['regular_price'] = pricesFromOnliner
-            .find((x) => x[0] == siteItem['meta:name_from_onliner'].replace('&quot;', '"'))[1];
+        let onlinerBikeItem = pricesFromOnliner
+            .find((x) => x[0] == siteItem['meta:name_from_onliner'].replace('&quot;', '"'));
+
+        if (onlinerBikeItem && parseInt(onlinerBikeItem[1]) > 0) {
+            siteItem['regular_price'] = onlinerBikeItem[1];
+            siteItem['stock_status'] = 'instock';
+        } else {
+            siteItem['stock_status'] = 'outofstock';
+        }
 
         return siteItem;
+
     }).map(function (item) {
         delete item['meta:name_from_onliner'];
         return item;
