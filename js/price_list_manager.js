@@ -18,7 +18,7 @@ function loadCsvFromOnliner() {
             quoteChar: '"',
             complete: function (e, fileData) {
                 try {
-                    pricesFromOnliner = e.data.map((x) => [x[2], x[4]]);
+                    pricesFromOnliner = e.data.map((x) => [x[2], x[5]]);
                     $('.csv-from-onliner-name').text('Файл ' + fileData.name + ' успешно обработан.')
                         .removeClass('bg-danger').addClass('bg-success');
                 } catch (error) {
