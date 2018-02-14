@@ -68,7 +68,7 @@
                 <label for="onlinerLink">Ссылка с онлайнера</label>
                 <input type="email" class="form-control" id="onlinerLink" placeholder="Ссылка">
             </div>
-            <button onclick="execute(parseGenerator())" id="parseButton" class="btn btn-primary">Стырить</button>
+            <button onclick="execute(loadPagesGenerator())" id="parseButton" class="btn btn-primary">Стырить</button>
 
         </div>
     </div>
@@ -89,7 +89,7 @@
                 <label for="log">Процесс выполнения</label>
                 <textarea class="form-control" id="log" placeholder="Лог" disabled></textarea>
             </div>
-            <button class="btn btn-danger" onclick="stopParsing = true">Прервать</button>
+            <button class="btn btn-danger" onclick="stopProcessing = true">Прервать</button>
             <button id="emptyLog" class="btn btn-default" onclick="$('#log').val('')">Очистить лог</button>
             <button id="lastFile" class="btn btn-info" onclick="window.open(window.lastEncodedCsv)">Скачать последний файл</button>
         </div>

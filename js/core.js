@@ -1,14 +1,14 @@
 /**
  * Created by qwer on 25.01.17.
  */
-let stopParsing = false;
+let stopProcessing = false;
 let notLoadNames = [];
 
 /**
- * parseGenerator
+ * loadPagesGenerator
  * @returns {boolean}
  */
-function* parseGenerator() {
+function* loadPagesGenerator() {
     if (!preStartParsing()) {
         return false;
     }
@@ -17,8 +17,8 @@ function* parseGenerator() {
     do {
         catalogPage = yield getCatalogPage(catalogPage ? ++catalogPage.page.current : 1);
         yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
-        yield new Promise(resolve => execute(parseProductsGenerator(catalogPage, csv), null, resolve));
-    } while (catalogPage.page.current != catalogPage.page.last && !stopParsing);
+        yield new Promise(resolve => execute(loadProductsFromPageGenerator(catalogPage, csv), null, resolve));
+    } while (catalogPage.page.current != catalogPage.page.last && !stopProcessing);
 
     finishParsing(csv);
 
@@ -26,12 +26,12 @@ function* parseGenerator() {
 }
 
 /**
- * parseProductsGenerator
+ * loadProductsFromPageGenerator
  * @param catalogPage
  * @param csv
  * @returns {boolean}
  */
-function* parseProductsGenerator(catalogPage, csv) {
+function* loadProductsFromPageGenerator(catalogPage, csv) {
     for (let productFormCatalog of catalogPage.products) {
         if (notLoadNames.indexOf(productFormCatalog.name) < 0) {
             try {
@@ -41,10 +41,11 @@ function* parseProductsGenerator(catalogPage, csv) {
                 console.log(productFormCatalog);
             }
 
-            let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1 + (catalogPage.page.current - 1) * catalogPage.page.limit;
+            let productIndex = _.indexOf(catalogPage.products, productFormCatalog) + 1
+                + (catalogPage.page.current - 1) * catalogPage.page.limit;
             setProgressBarPosition(productIndex, catalogPage.total);
 
-            if (stopParsing) break;
+            if (stopProcessing) break;
             yield new Promise(resolve => setTimeout(resolve, _.random(1500, 2000)));
         }
     }
@@ -154,7 +155,7 @@ function finishParsing(csv) {
  * @returns {boolean}
  */
 function preStartParsing() {
-    stopParsing = false;
+    stopProcessing = false;
     let onlinerLinkInput = $('#onlinerLink');
 
     if (onlinerLinkInput.val() == '') {
@@ -179,11 +180,18 @@ function readAlreadyExistedCsv() {
             complete: function (e, fileData) {
                 try {
                     notLoadNames = e.data.map((x) => x['meta:name_from_onliner']);
-                    $('.already-existed-csv-name').text('Файл ' + fileData.name + ' успешно обработан.')
-                        .removeClass('bg-danger').addClass('bg-success');
+                    $('.already-existed-csv-name')
+                        .text('Файл ' + fileData.name + ' успешно обработан.')
+                        .removeClass('bg-danger')
+                        .addClass('bg-success');
                 } catch (error) {
                     notLoadNames = [];
-                    $('.already-existed-csv-name').text('Ошибка, что-то пошло не так.').addClass('bg-danger').removeClass('bg-success');
+
+                    $('.already-existed-csv-name')
+                        .text('Ошибка, что-то пошло не так.')
+                        .addClass('bg-danger')
+                        .removeClass('bg-success');
+
                     alert('Ошибка. И один Господь Бог в курсе что за хрень там произошла, извините, ' +
                         'но ничего поделать уже нельзя. Все кончено. Товары не запаросились, бизнес просран. ' +
                         'Выход один: алкоголизм. Приносим еще раз свои искренние извинения за неудобства, ' +
